@@ -57,7 +57,7 @@ else
     echo "Failed....Exiting"
     exit 0
 fi
-sleep 1
+sleep 2
 source ~/.bashrc
 sleep 2
 go install github.com/tomnomnom/assetfinder@latest
