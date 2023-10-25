@@ -12,6 +12,9 @@ RESET='\033[0m' # Reset color back to default
 #7.naabu
 #8.waybackurls
 
+apt update
+yum update
+
 go install github.com/tomnomnom/assetfinder@latest
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 go install -v github.com/owasp-amass/amass/v4/...@master
