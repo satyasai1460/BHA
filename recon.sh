@@ -12,12 +12,12 @@ subfinder -d $target -o $target.txt
 assetfinder --subs-only $target | tee $target2.txt
 
 #For Finding Subdomains using amass
-#amass enum -d $target | tee $target3.txt
-sleep 2
+amass enum -passive -norecursive -noalts -d $target -o $target3.txt
+sleep 1
 
 #Saving all the subdomains into a mainfile
 echo "Saving all the Subdomains into a mainfile"
-cat $target.txt $target2.txt >main$target.txt
+cat $target.txt $target2.txt $target3.txt >>main$target.txt
 
 #Nuclei tool is used to automate and find the Interesting bugs using Nuclei Templates
 nuclei -l main$target.txt -t /root/nuclei-templates -o nuclei$target.txt
