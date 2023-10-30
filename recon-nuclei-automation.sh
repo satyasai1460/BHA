@@ -29,5 +29,5 @@ cat main$target.txt | httpx -mc 200 | tee live$target.txt
 naabu -list live$target.txt -top-ports 1000 -exclude-ports 80,443 -o naabu$target.txt
 
 # Waybackurls used to crawl all the urls and saving into a waybackdata
-cat $target.txt | waybackurls | tee waybackdata
+cat $target.txt | waybackurls | tee $target-waybackdata.txt
 echo -e "${GREEN}Task completed${RESET}"
