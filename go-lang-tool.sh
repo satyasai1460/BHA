@@ -9,7 +9,7 @@ wget https://go.dev/dl/go1.21.5.linux-amd64.tar.gz
 echo ""
 
 #Extracting Go Lang
-rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
+rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.5.linux-amd64.tar.gz
 
 # Define the Go Lang variables you want to remove
 go_variables=("GOPATH" "GOROOT" "PATH")
