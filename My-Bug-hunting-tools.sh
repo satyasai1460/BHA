@@ -21,6 +21,7 @@ go install -v github.com/owasp-amass/amass/v4/...@master
 go install github.com/ffuf/ffuf/v2@latest
 go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
 sudo apt-get install build-essential -y
 sudo apt-get install libpcap-dev -y
 go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
