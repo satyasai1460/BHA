@@ -11,6 +11,7 @@ RESET='\033[0m' # Reset color back to default
 #6.httpx
 #7.naabu
 #8.waybackurls
+#9.httprobe
 
 apt update
 yum update
@@ -26,6 +27,7 @@ sudo apt-get install build-essential -y
 sudo apt-get install libpcap-dev -y
 go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 go install github.com/tomnomnom/waybackurls@latest
+go install github.com/tomnomnom/httprobe@latest
 
 cd
 cd go/bin
