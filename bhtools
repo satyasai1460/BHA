@@ -15,6 +15,7 @@ RESET='\033[0m' # Reset color back to default
 
 apt update
 yum update
+export PATH=$PATH:/usr/local/go/bin
 
 go install github.com/tomnomnom/assetfinder@latest
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
