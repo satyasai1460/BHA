@@ -31,7 +31,7 @@ go install github.com/tomnomnom/waybackurls@latest
 go install github.com/tomnomnom/httprobe@latest
 go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
 
-cp subfinder assetfinder amass ffuf nuclei httpx naabu waybackurls /usr/local/go/bin
+cp /root/go/bin/* /usr/local/bin/
 echo ""
 echo ""
 echo -e "${GREEN}All Bug Hunting tools are Installed successfully${RESET}"
