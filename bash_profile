@@ -33,7 +33,7 @@ curl http://ipinfo.io/$1
 }
 
 mfuzz(){
-ffuf -w /root/subdomain_megalist.txt -u 'https://FUZZ.$@' -c  -t 350 -mc all  -fs 0	
+ffuf -w /root/subdomain_megalist.txt -u 'https://FUZZ."{$@}"' -c  -t 350 -mc all  -fs 0	
 }
 
 
