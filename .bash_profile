@@ -11,6 +11,10 @@ s3cp() {
     aws s3 cp s3://$@ --no-sign-request
 }
 
+s3b() {
+    aws s3 sync /root/bughunting/ s3://bugbountyhunting/bughunting/
+}
+
 dcache() {
     sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
 }
