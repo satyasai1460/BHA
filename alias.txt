@@ -23,3 +23,22 @@ s3cp() {
 s3b() {
 	aws s3 sync /root/bughunting/ s3://bugbountyhunting/bughunting/
 }
+
+
+
+alias mfuzz='subdomain_fuzz'
+
+subdomain_fuzz() {
+    local domain="$1"
+    ffuf -w /root/subdomain_megalist.txt -u "https://FUZZ.${domain}/" -c -t 350 -mc all -fs 0
+}
+
+
+alias nfuzz='path_fuzz'
+
+path_fuzz() {
+    local domain="$1"
+    ffuf -c -w /root/fuzz.txt -mc 200,302,301,403 -u 'https://${domain}/FUZZ' -ac
+}
+
+
