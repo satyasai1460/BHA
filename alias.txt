@@ -38,7 +38,14 @@ alias nfuzz='path_fuzz'
 
 path_fuzz() {
     local domain="$1"
-    ffuf -c -w /root/fuzz.txt -mc 200,302,301,403 -u "https://${domain}/FUZZ" -ac
+    ffuf -c -w /root/fuzz.txt -mc 200 -u "https://${domain}/FUZZ" -ac
 }
 
+
+alias nfuzzall='path_fuzz'
+
+path_fuzz() {
+    local domain="$1"
+    ffuf -c -w /root/fuzz.txt -mc 200,302,301,403 -u "https://${domain}/FUZZ" -ac
+}
 
