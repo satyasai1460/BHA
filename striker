@@ -9,15 +9,15 @@ read target
 subfinder -d $target -o $target.txt
 
 #For Finding Subdomains using Assetfinder
-assetfinder --subs-only $target | tee $target2.txt
+assetfinder --subs-only $target | tee "${target}2".txt
 
 #For Finding Subdomains using amass
-amass enum -passive -norecursive -noalts -d $target -o $target3.txt
-sleep 1
+#amass enum -passive -norecursive -noalts -d $target -o "${target}3".txt
 
 #Saving all the subdomains into a mainfile
 echo "Saving all the Subdomains into a mainfile"
-cat $target.txt $target2.txt $target3.txt >>main$target.txt
+cat $target.txt "${target}2".txt >>main$target.txt
+#cat $target.txt "${target}2".txt "${target}3".txt >>main$target.txt
 
 #Nuclei tool is used to automate and find the Interesting bugs using Nuclei Templates
 nuclei -l main$target.txt -t /root/nuclei-templates -o nuclei$target.txt
@@ -31,8 +31,5 @@ naabu -list live$target.txt -top-ports 1000 -exclude-ports 80,443 -o naabu$targe
 # Waybackurls used to crawl all the urls and saving into a waybackdata
 cat live$target.txt | waybackurls | tee $target-waybackdata.txt
 
-
 cat $target-waybackdata.txt | grep ".js$" | tee -a livejs.txt
 echo -e "${GREEN}Task completed${RESET}"
-
-
