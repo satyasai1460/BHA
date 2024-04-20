@@ -2,6 +2,9 @@ alias dcache='sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"'
 alias brc='source ~/.bashrc'
 alias bp='source .bash_profile'
 alias pb='ping google.com'
+alias cls='clear'
+alias apu='apt-get update'
+alias apuu='apt-get upgrade'
 
 # Define a function instead of an alias for ipinfo
 ipinfo() {
@@ -48,4 +51,3 @@ path_fuzzall() {
     local domain="$1"
     ffuf -c -w /root/fuzz.txt -mc 200,302,301,403 -u "https://${domain}/FUZZ" -ac
 }
-
