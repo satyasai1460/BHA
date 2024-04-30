@@ -29,13 +29,35 @@ s3b() {
 
 
 
+alias sfuzz='subdomain_fuzz'
+subdomain_fuzz() {
+    echo "Enter the placeholder for subdomain (e.g., FUZZ): "
+    read placeholder
+    ffuf -w /root/subdomain_megalist.txt -u "https://${placeholder}/" -c -t 350 -mc all -fs 0
+}
+
+
+alias pfuzz='path_fuzz'
+path_fuzz() {
+    echo "Enter the placeholder for subdomain (e.g., FUZZ): "
+    read placeholder
+    ffuf -c -w /root/fuzz.txt -mc 200 -u "https://${placeholder}/FUZZ" -ac
+
+
+
+
+
+
+
+
+
+
 alias mfuzz='subdomain_fuzz'
 
 subdomain_fuzz() {
     local domain="$1"
     ffuf -w /root/subdomain_megalist.txt -u "https://FUZZ.${domain}/" -c -t 350 -mc all -fs 0
 }
-
 
 alias nfuzz='path_fuzz'
 
@@ -51,3 +73,8 @@ path_fuzzall() {
     local domain="$1"
     ffuf -c -w /root/fuzz.txt -mc 200,302,301,403 -u "https://${domain}/FUZZ" -ac
 }
+
+
+
+
+
