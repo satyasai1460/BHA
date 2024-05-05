@@ -5,6 +5,9 @@ alias pb='ping google.com'
 alias cls='clear'
 alias apu='apt-get update'
 alias apuu='apt-get upgrade'
+gs='git status'
+ga='git add .'
+gpom='git push origin main'
 
 # Define a function instead of an alias for ipinfo
 ipinfo() {
@@ -37,11 +40,12 @@ subdomain_fuzz() {
 }
 
 
-alias pfuzz='path_fuzz'
-path_fuzz() {
+alias pfuzz='path_fuzzz'
+path_fuzzz() {
     echo "Enter the placeholder for subdomain (e.g., FUZZ): "
     read placeholder
     ffuf -c -w /root/fuzz.txt -mc 200 -u "https://${placeholder}/FUZZ" -ac
+}
 
 
 
