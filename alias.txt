@@ -45,6 +45,12 @@ pfuzz() {
 }
 
 
+pnfuzz() {
+    echo "Enter the placeholder for subdomain (e.g., FUZZ): "
+    read placeholder
+    ffuf -c -w /root/fuzz.txt -mc 200,302,301,403 -u "https://${placeholder}/FUZZ" -ac
+}
+
 
 
 
