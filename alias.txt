@@ -52,6 +52,8 @@ pnfuzz() {
 }
 
 
+wpscan --url https://$@/ --api-token irWep0TK6Lvga3Nsdfw7fq7pDECjuAVIn8KVxQqgKjQ
+
 
 
 

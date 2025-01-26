@@ -32,4 +32,5 @@ naabu -list live$target.txt -top-ports 1000 -exclude-ports 80,443 -o naabu$targe
 cat live$target.txt | waybackurls | tee $target-waybackdata.txt
 
 cat $target-waybackdata.txt | grep ".js$" | tee -a livejs.txt
+nuclei -l livejs.txt -t /root/nuclei-templates/http/exposures/ | tee -a jsbug.txt
 echo -e "${GREEN}Task completed${RESET}"
