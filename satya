@@ -14,11 +14,11 @@ send_telegram_notification() {
     curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
         -d chat_id="$CHAT_ID" \
         -d text="$message" \
-        -d parse_mode="Markdown" > /dev/null 2>&1
+        -d parse_mode="Markdown" >/dev/null 2>&1
 }
 
 # Initialize progress
-TOTAL_STEPS=7
+TOTAL_STEPS=8
 CURRENT_STEP=0
 
 # Increment progress and send an update
@@ -44,12 +44,19 @@ send_telegram_notification "🔍 Starting Assetfinder for target: *$target*"
 assetfinder --subs-only "$target" | tee "${target}2.txt"
 update_progress
 
-# Step 3: Combine Subdomains
-send_telegram_notification "📂 Combining subdomains into a main file"
-cat "$target.txt" "${target}2.txt" >> "main$target.txt"
+# Step 3: Amass
+send_telegram_notification "🔍 Starting Amass for target: *$target*"
+amass enum -passive -norecursive -noalts -d $target -o amass1$target.txt
+amass enum -passive -norecursive -noalts -df amass1$target.txt -o amass2$target.txt
+cat amass1$target.txt amass2$target.txt >>amass$target.txt
 update_progress
 
-# Step 4: Nuclei Scan
+# Step 4: Combine Subdomains
+send_telegram_notification "📂 Combining subdomains into a main file"
+cat "$target.txt" "${target}2.txt" amass$target.txt >>"main$target.txt"
+update_progress
+
+# Step 5: Nuclei Scan
 send_telegram_notification "🔎 Starting Nuclei scan for target: *$target*"
 
 # Run nuclei with real-time output to the terminal and save results to a file
@@ -70,17 +77,17 @@ nuclei -nc -l "main$target.txt" -t /root/nuclei-templates | tee "nuclei$target.t
     done
 update_progress
 
-# Step 5: Live URLs with HTTPX
+# Step 6: Live URLs with HTTPX
 send_telegram_notification "🌐 Checking live URLs with HTTPX"
 cat "main$target.txt" | httpx -mc 200 | tee "live$target.txt"
 update_progress
 
-# Step 6: Naabu Port Scan
+# Step 7: Naabu Port Scan
 send_telegram_notification "🚪 Starting Naabu port scan for live URLs"
 naabu -list "live$target.txt" -top-ports 1000 -exclude-ports 80,443 -o "naabu$target.txt"
 update_progress
 
-# Step 7: Wayback URLs and JS Analysis
+# Step 8: Wayback URLs and JS Analysis
 send_telegram_notification "📜 Extracting Wayback URLs and analyzing JavaScript files"
 cat "live$target.txt" | waybackurls | tee "$target-waybackdata.txt"
 cat "$target-waybackdata.txt" | grep ".js$" | tee -a "livejs.txt"
