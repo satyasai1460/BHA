@@ -27,6 +27,7 @@ go install github.com/ffuf/ffuf/v2@latest
 go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+go install -v github.com/projectdiscovery/notify/cmd/notify@latest
 go install github.com/tomnomnom/waybackurls@latest
 go install github.com/tomnomnom/httprobe@latest
 go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest

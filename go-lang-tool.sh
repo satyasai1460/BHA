@@ -5,7 +5,7 @@ RESET='\033[0m' # Reset color back to default
 rm -rf go1.22.1.linux-amd64.tar.gz*
 
 #Downloading Go Lang
-wget https://go.dev/dl/go1.22.1.linux-amd64.tar.gz
+wget https://go.dev/dl/go1.24.2.linux-amd64.tar.gz
 echo ""
 
 #Extracting Go Lang
