@@ -52,7 +52,16 @@ pnfuzz() {
 }
 
 
-wpscan --url https://$@/ --api-token irWep0TK6Lvga3Nsdfw7fq7pDECjuAVIn8KVxQqgKjQ
+wscan() {
+  read -p "Enter domain (e.g., example.com): " domain
+  token="WPSCAN_API_TOKEN_HERE"
+  clean_domain=$(echo "$domain" | sed 's~https\?://~~g' | sed 's~/.*~~')
+  timestamp=$(date +%F_%H-%M-%S)
+  output_file="/root/bughunting/${clean_domain}_${timestamp}.txt"
+  mkdir -p /root/bughunting
+  wpscan --url "https://$clean_domain" --api-token "$token" --random-user-agent >> "$output_file"
+  echo "[✓] Scan output is saved to $output_file"
+}
 
 
 
