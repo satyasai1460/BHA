@@ -68,8 +68,8 @@ check_tools() {
 
 read -rp "Enter target domain: " target
 
-TIMESTAMP=$(date +%s)
-WORKDIR="/root/bughunting/recon_$target_$TIMESTAMP"
+TIMESTAMP=echo $(date "+%Y-%m-%d_%H:%M:%S")
+WORKDIR="/root/bughunting/recon_${target}_${TIMESTAMP}"
 mkdir -p "$WORKDIR"
 
 send_telegram "🚀 Recon started: *$target*"
