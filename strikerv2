@@ -1,0 +1,191 @@
+#!/bin/bash
+
+set -euo pipefail
+
+############################
+# CONFIG
+############################
+
+BOT_TOKEN="${BOT_TOKEN:-BOT_TOKEN}"
+CHAT_ID="${CHAT_ID:-CHAT_ID}"
+
+THREADS=50
+RATE_LIMIT=100
+
+TOOLS=(
+    subfinder assetfinder amass httpx nuclei naabu
+    waybackurls waymore katana dnsx hakrawler ffuf
+)
+
+############################
+# UTILS
+############################
+
+log() {
+    echo -e "\033[0;32m[+] $1\033[0m"
+}
+
+error() {
+    echo -e "\033[0;31m[-] $1\033[0m"
+}
+
+send_telegram() {
+    local msg="$1"
+    curl -s --max-time 10 --retry 2 -X POST \
+        "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+        -d chat_id="$CHAT_ID" \
+        -d text="$msg" \
+        -d parse_mode="Markdown" >/dev/null || true
+}
+
+############################
+# DEPENDENCY CHECK
+############################
+
+check_tools() {
+    log "Checking required tools..."
+
+    missing=()
+
+    for tool in "${TOOLS[@]}"; do
+        if ! command -v "$tool" &>/dev/null; then
+            missing+=("$tool")
+        fi
+    done
+
+    if [ ${#missing[@]} -ne 0 ]; then
+        error "Missing tools: ${missing[*]}"
+        echo "Install them before running."
+        exit 1
+    fi
+
+    log "All tools are installed ✔"
+}
+
+############################
+# INPUT
+############################
+
+read -rp "Enter target domain: " target
+
+TIMESTAMP=$(date +%s)
+WORKDIR="/root/bughunting/recon_$target_$TIMESTAMP"
+mkdir -p "$WORKDIR"
+
+send_telegram "🚀 Recon started: *$target*"
+
+############################
+# STEP 1 - SUBDOMAIN ENUM
+############################
+
+log "Subdomain enumeration..."
+
+subfinder -silent -d "$target" > "$WORKDIR/subfinder.txt" &
+assetfinder --subs-only "$target" > "$WORKDIR/assetfinder.txt" &
+amass enum -passive -d "$target" > "$WORKDIR/amass.txt" &
+findomain -t "$target" -q > "$WORKDIR/findomain.txt" &
+
+wait
+
+cat "$WORKDIR/"*.txt | sort -u > "$WORKDIR/all_subs.txt"
+
+############################
+# STEP 2 - DNS RESOLUTION
+############################
+
+log "Resolving valid domains..."
+
+dnsx -silent -l "$WORKDIR/all_subs.txt" > "$WORKDIR/resolved.txt"
+
+############################
+# STEP 3 - LIVE HOSTS
+############################
+
+log "Probing live hosts..."
+
+httpx -silent -l "$WORKDIR/resolved.txt" \
+    -mc 200,302,403 \
+    -threads $THREADS \
+    > "$WORKDIR/live.txt"
+
+############################
+# STEP 4 - CRAWLING (IMPORTANT)
+############################
+
+log "Crawling URLs..."
+
+katana -silent -list "$WORKDIR/live.txt" -d 3 > "$WORKDIR/katana.txt" &
+hakrawler -plain -urls < "$WORKDIR/live.txt" > "$WORKDIR/hakrawler.txt" &
+waymore -i "$WORKDIR/live.txt" -mode U > "$WORKDIR/waymore.txt" &
+waybackurls < "$WORKDIR/live.txt" > "$WORKDIR/wayback.txt" &
+
+wait
+
+cat "$WORKDIR/"*way*.txt "$WORKDIR/katana.txt" "$WORKDIR/hakrawler.txt" \
+    | sort -u > "$WORKDIR/all_urls.txt"
+
+############################
+# STEP 5 - JS + PARAMS
+############################
+
+grep "\.js$" "$WORKDIR/all_urls.txt" > "$WORKDIR/js.txt"
+grep "=" "$WORKDIR/all_urls.txt" > "$WORKDIR/params.txt"
+
+############################
+# STEP 6 - NUCLEI SCAN
+############################
+
+log "Running nuclei..."
+
+nuclei -l "$WORKDIR/live.txt" \
+    -severity low,medium,high,critical \
+    -rl $RATE_LIMIT \
+    -c 25 \
+    -silent \
+    -o "$WORKDIR/nuclei.txt" |
+while read -r line; do
+    severity=$(echo "$line" | grep -oE "critical|high|medium|low" | tr '[:lower:]' '[:upper:]')
+    send_telegram "⚠️ *$severity*\n$line"
+done
+
+############################
+# STEP 7 - PORT SCAN
+############################
+
+log "Running port scan..."
+
+naabu -list "$WORKDIR/live.txt" \
+    -top-ports 1000 \
+    -rate 1000 \
+    -o "$WORKDIR/ports.txt"
+
+############################
+# STEP 8 - FUZZING (FFUF)
+############################
+
+log "Running basic fuzzing..."
+
+ffuf -u https://FUZZ."$target" \
+    -w /usr/share/wordlists/dirb/common.txt \
+    -mc 200,403 \
+    -t 50 \
+    -o "$WORKDIR/ffuf.json" \
+    -of json || true
+
+############################
+# STEP 9 - JS VULN SCAN
+############################
+
+log "Scanning JS exposures..."
+
+nuclei -l "$WORKDIR/js.txt" \
+    -t ~/nuclei-templates/http/exposures/ \
+    -silent \
+    -o "$WORKDIR/js_vuln.txt"
+
+############################
+# DONE
+############################
+
+send_telegram "🎉 Recon completed: *$target*"
+log "Done. Results stored in $WORKDIR"

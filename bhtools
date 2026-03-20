@@ -17,7 +17,15 @@ RESET='\033[0m' # Reset color back to default
 apt update
 yum update
 sudo apt-get install build-essential -y
-sudo apt-get install libpcap-dev -y
+sudo apt-get install libpcap-dev pipx python3-pip -y
+pipx install git+https://github.com/xnl-h4ck3r/waymore.git
+pipx ensurepath
+source ~/.bashrc
+cd /tmp/ && curl -LO https://github.com/findomain/findomain/releases/latest/download/findomain-linux.zip
+unzip findomain-linux.zip
+chmod +x findomain
+sudo mv findomain /usr/local/bin/findomain
+
 export PATH=$PATH:/usr/local/go/bin
 
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
@@ -31,6 +39,11 @@ go install -v github.com/projectdiscovery/notify/cmd/notify@latest
 go install github.com/tomnomnom/waybackurls@latest
 go install github.com/tomnomnom/httprobe@latest
 go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
+go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+go install github.com/hakluke/hakrawler@latest
+CGO_ENABLED=1 go install github.com/projectdiscovery/katana/cmd/katana@latest
+
+
 
 cp /root/go/bin/* /usr/local/bin/
 echo ""
